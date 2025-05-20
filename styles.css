@@ -42,10 +42,10 @@ body {
   button:hover {
     background: #555;
   }
-  button.equal.operator {
+  button.equal {
     background: #4caf50;
   }
-  button.equal.operator:hover {
+  button.equal:hover {
     background: #66bb6a;
   }
   button.operator {

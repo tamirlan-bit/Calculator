@@ -5,10 +5,10 @@ const equalBtn = document.querySelector('.equal');
 const clearBtn = document.querySelector('.clear');
 
 
-let lastPressed = 0;
 let storedNum = '';
-let addingSum = 0;
+let mem = 0;
 let lastOperation = '';
+let equalFlag = false
 
 // Update the display
 function updateDisplay(value) {
@@ -17,25 +17,32 @@ function updateDisplay(value) {
 
 // Numbers event listeners
 numberBtns.forEach(number => {
-    number.addEventListener('click', () => {  
-        if ( lastOperation == "=")    {
-            addingSum = 0;
+    number.addEventListener('click', () => {
+        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);
+        console.log("Numbers addListerner");           
+        if ( equalFlag == true)    {
+            mem = 0;
+            equalFlag = false;
         }                          
         storedNum += number.textContent;
         updateDisplay(storedNum);
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " addingSum: ",addingSum);
+        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);
     });
 });
 
 // Operator event listeners
 operatorBtns.forEach(operator => {
     operator.addEventListener('click', () => {
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " addingSum: ",addingSum);
-        // If there is no stored number, use the current display as the stored number
-        if (storedNum !== '') {
-            handleAdd(storedNum);
+        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);
+        equalFlag = false;           
+        lastOperation = operator.textContent;                
+        if (lastOperation == '+') { 
+            handleAdd(storedNum); 
         }
-        lastOperation = operator.textContent;        
+        if (lastOperation == '−') { 
+            handleSub(storedNum); 
+        } 
+        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);      
     });
 });
 
@@ -43,34 +50,50 @@ operatorBtns.forEach(operator => {
 function handleAdd(value) {
     lastOperation = '+';
     const nValue = Number(value);
-    addingSum = nValue + addingSum;
-    updateDisplay(addingSum);
+    mem = nValue + mem;
+    updateDisplay(mem);
     storedNum = '';
-    console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " addingSum: ",addingSum);
+}
+
+// Handle subtraction
+function handleSub(value) {
+    lastOperation = '−';
+    const nValue = Number(value);
+    mem = nValue - mem;
+    updateDisplay(mem);
+    storedNum = '';
+    console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);   
 }
 
 // Equal event listeners
 equalBtn.addEventListener('click', () => {
+    console.log("Equal addListerner");  
+    equalFlag = true;  
     handleEqual();
 });
 
 function handleEqual() {
+    console.log("=");
     let result = '';
     if (lastOperation == '+'){
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " addingSum: ",addingSum);
-        result = Number(addingSum) + Number(storedNum);
+        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);      
+        result = Number(mem) + Number(storedNum);
+        updateDisplay(result);  
+        mem = result;
+    }
+    else if (lastOperation == '−'){
+        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);      
+        result = Number(mem) - Number(storedNum);
         updateDisplay(result);  
     }
     storedNum = '';
-   // addingSum = 0;
 }
 
 // Clear event listener
 clearBtn.addEventListener('click', () => {
     updateDisplay('CLEARED');
     storedNum = '';
-    lastPressed = 0;
-    addingSum = 0;
+    mem = 0;
     setTimeout(() => { updateDisplay(0); },700);
     console.log("Time to cleanup display");
 });
