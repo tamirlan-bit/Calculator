@@ -43,8 +43,11 @@ operatorBtns.forEach(operator => {
             handleSub(lastNum); 
         } 
         else if ( lastOperation == '×') {
-            console.log("op listen, lastOp=x");
             handleMulti(lastNum);
+        }
+        else if ( lastOperation == '÷') {
+            console.log("op listen, lastOp=÷");
+            handleDivide(lastNum);
         }
         console.log("Op Listner: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
     });
@@ -74,8 +77,6 @@ function handleSub(value) {
 
 // Handle multiplication
 function handleMulti(value) {
-    console.log("Handle Multi: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem); 
-    console.log("mem: ",mem," value: ",value);     
     lastOperation = '×';
     if ( opMem == '' ){
         mem = 1;
@@ -85,12 +86,29 @@ function handleMulti(value) {
         value = 1;
     }
     let nValue = Number(value);
-    console.log("mem: ",mem," nvalue: ",nValue);
     mem = nValue * mem;
     updateDisplay(mem);
     lastNum = '';    
-    console.log("Handle Multi end: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
+}
 
+// Handle Divide
+function handleDivide(value) {
+    lastOperation = '÷';
+    console.log("Divide: lastOperation ", lastOperation , "opMem" ,opMem, "value: ",value, " mem: ",mem);
+    if ( opMem == '' ){
+        mem = value;
+        value = 1;
+    }
+    opMem = '÷';
+    if ( value == ''){
+        value = 1;
+    }
+    let nValue = Number(value);
+    console.log("opMem" ,opMem, "nvalue: ",nValue, " mem: ",mem);      
+    mem = mem / nValue;
+    updateDisplay(mem);
+    console.log("mem: ",mem);
+    lastNum = '';    
 }
 
 // Equal event listeners
@@ -120,10 +138,16 @@ function handleEqual() {
         updateDisplay(result);  
         mem = result;
         console.log("Handle Multi: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
-
     }
+    else if (lastOperation == '÷'){
+        result = Number(mem) / Number(lastNum);
+        updateDisplay(result);  
+        mem = result;
+        console.log("Handle Multi: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
+    }    
     lastNum = '';
     lastOperation = '';
+    opMem = '';
 }
 
 // Clear event listener
