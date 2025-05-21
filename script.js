@@ -5,9 +5,10 @@ const equalBtn = document.querySelector('.equal');
 const clearBtn = document.querySelector('.clear');
 
 
-let storedNum = '';
+let lastNum = '';
 let mem = 0;
 let lastOperation = '';
+let opMem = '';
 let equalFlag = false
 
 // Update the display
@@ -18,56 +19,82 @@ function updateDisplay(value) {
 // Numbers event listeners
 numberBtns.forEach(number => {
     number.addEventListener('click', () => {
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);
-        console.log("Numbers addListerner");           
+        console.log("lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);
         if ( equalFlag == true)    {
             mem = 0;
             equalFlag = false;
         }                          
-        storedNum += number.textContent;
-        updateDisplay(storedNum);
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);
+        lastNum += number.textContent;
+        updateDisplay(lastNum);
+        console.log("lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);
     });
 });
 
 // Operator event listeners
 operatorBtns.forEach(operator => {
     operator.addEventListener('click', () => {
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);
+        console.log("lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);
         equalFlag = false;           
         lastOperation = operator.textContent;                
         if (lastOperation == '+') { 
-            handleAdd(storedNum); 
+            handleAdd(lastNum); 
         }
-        if (lastOperation == '−') { 
-            handleSub(storedNum); 
+        else if (lastOperation == '−') { 
+            handleSub(lastNum); 
         } 
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);      
+        else if ( lastOperation == '×') {
+            console.log("op listen, lastOp=x");
+            handleMulti(lastNum);
+        }
+        console.log("Op Listner: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
     });
 });
 
 // Handle addition
 function handleAdd(value) {
     lastOperation = '+';
-    const nValue = Number(value);
+    let nValue = Number(value);
+    opMem = '+';
     mem = nValue + mem;
     updateDisplay(mem);
-    storedNum = '';
+    lastNum = '';
 }
 
 // Handle subtraction
 function handleSub(value) {
-    lastOperation = '−';
-    const nValue = Number(value);
-    mem = nValue - mem;
+    let nValue = Number(value);
+    if ( opMem != '−' ){
+        nValue = nValue * -1 ;
+    }
+    opMem = '−';
+    mem = mem - nValue;
     updateDisplay(mem);
-    storedNum = '';
-    console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);   
+    lastNum = '';
+}
+
+// Handle multiplication
+function handleMulti(value) {
+    console.log("Handle Multi: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem); 
+    console.log("mem: ",mem," value: ",value);     
+    lastOperation = '×';
+    if ( opMem == '' ){
+        mem = 1;
+    }
+    opMem = '×';
+    if ( value == ''){
+        value = 1;
+    }
+    let nValue = Number(value);
+    console.log("mem: ",mem," nvalue: ",nValue);
+    mem = nValue * mem;
+    updateDisplay(mem);
+    lastNum = '';    
+    console.log("Handle Multi end: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
+
 }
 
 // Equal event listeners
 equalBtn.addEventListener('click', () => {
-    console.log("Equal addListerner");  
     equalFlag = true;  
     handleEqual();
 });
@@ -76,24 +103,37 @@ function handleEqual() {
     console.log("=");
     let result = '';
     if (lastOperation == '+'){
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);      
-        result = Number(mem) + Number(storedNum);
+        result = Number(mem) + Number(lastNum);
         updateDisplay(result);  
         mem = result;
+        console.log("Handle add: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
     }
     else if (lastOperation == '−'){
-        console.log("lastOperation ", lastOperation ,"storedNum: ",storedNum, " mem: ",mem, "EqualFlag", equalFlag);      
-        result = Number(mem) - Number(storedNum);
+        result = Number(mem) - Number(lastNum);
         updateDisplay(result);  
+        mem = result;
+        console.log("Handle sub: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
+
     }
-    storedNum = '';
+    else if (lastOperation == '×'){
+        result = Number(mem) * Number(lastNum);
+        updateDisplay(result);  
+        mem = result;
+        console.log("Handle Multi: lastOperation ", lastOperation , "opMem" ,opMem, "lastNum: ",lastNum, " mem: ",mem);      
+
+    }
+    lastNum = '';
+    lastOperation = '';
 }
 
 // Clear event listener
 clearBtn.addEventListener('click', () => {
     updateDisplay('CLEARED');
-    storedNum = '';
+    lastNum = '';
     mem = 0;
+    opMem = '';
+    lastOperation = '';
+    equalFlag = false;
     setTimeout(() => { updateDisplay(0); },700);
     console.log("Time to cleanup display");
 });
