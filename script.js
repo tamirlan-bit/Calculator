@@ -141,39 +141,40 @@ function handleEqual() {
         mem = result;
     }
     else if (lastOperation == '÷'){
-        result = Number(mem) / Number(lastNum);
-        if ( Number(lastNum) === 0) {
-            result = 'Error';
+        if (Number(lastNum) === 0) {
+            updateDisplay("Error");
+            clearValues();
+            return;
         }
-        updateDisplay(result);  
+        result = Number(mem) / Number(lastNum);
+        updateDisplay(result);
         mem = result;
-    }    
+    }   
     clearValues();
 }
 
-//Back Space ⌫
+//Backspace ⌫
 backBtn.addEventListener('click', () => {
     lastNum = display.textContent;
     lastNum = lastNum.slice(0,-1);
-    updateDisplay(lastNum);
+    updateDisplay(lastNum || 0);
 });
 
 //negative
 negBtn.addEventListener('click', () => {
-    lastNum = display.textContent;
-    lastNum = -lastNum;
-    updateDisplay(lastNum);
+    if (!isNaN(display.textContent)) {
+        lastNum = -Number(display.textContent);
+        updateDisplay(lastNum);
+    }
 });
 
-//dot
+//adding dot
 dotBtn.addEventListener('click', () => {
-    lastNum = display.textContent;
+    if (isNaN(display.textContent)) return; // skip if Error is displayed
+
     if (!lastNum.includes('.')) {
-        if (lastNum === '') {
-            lastNum = '0.';
-        } else {
-            lastNum += '.';
-        }
+        lastNum = lastNum || '0'; // if lastNum is empty, start with 0
+        lastNum += '.';
         updateDisplay(lastNum);
     }
 });
@@ -190,7 +191,7 @@ clearBtn.addEventListener('click', () => {
 function clearValues (){
     lastNum = '';    
     opMem = '';
-    lastOperation = '';    
+    lastOperation = '';   
 }
 
 
